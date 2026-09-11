@@ -28,7 +28,7 @@ body {
 
 #board div img {
     width: calc(100% / 2);
-    height: calc(100% / 2); 
+    height: calc(100% / 2);
 
     /* Prevents user from highlighting/dragging images */
     user-select: none;
@@ -36,4 +36,8 @@ body {
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+}
+
+#board div:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }

@@ -7,12 +7,15 @@ let moleIntv;
 let plantIntv;
 //Game Management
 let score = 0;
+let scoreChange = 10;
 let highScore = 0;
 let gameOver = false;
+//Mole Variation Management
+let moleType;
 
 window.onload = function() {
     setGame();
-}
+};
 
 function setGame() {
     //Set up the grid for the game board in html
@@ -42,11 +45,12 @@ function restartGame() {
 
     //Reset displays
     setTexts();
+    document.getElementById("score").innerText = score.toString(); //Resets score display to not include scoreChange
 }
 
 // Picks a random tile 0-8
 function getRandomTile() {
-    let num = Math.floor(Math.random() * 9)
+    let num = Math.floor(Math.random() * 9);
     return num.toString();
 }
 
@@ -65,11 +69,16 @@ function setMole() {
 
     //Sets the mole texture
     let mole = document.createElement("img");
-    mole.src = "./media/monty-mole.png"
+    mole.src = "./media/monty-mole.png";
+
+    //Sets the mole type
+    let rng = Math.random() * 100;
+    console.log(rng.toString());
+    moleType = (rng <= 1) ? "diamond" : (rng <= 11) ? "gold" : "normal";
 
     //Gets a random tile and places the mole there, given no plant is there
     let num = getRandomTile();
-    if (document.getElementById(num) == prevMoleTile) { //Offsets tile if it would appear in the same spot as the previous one
+    if (document.getElementById(num) == prevMoleTile || document.getElementById(num) == currPlantTile) { //Offsets tile if it would appear in the same spot as the previous one
         num++;
     }
     if (currPlantTile && currPlantTile.id == num) {
@@ -78,6 +87,10 @@ function setMole() {
     currMoleTile = document.getElementById(num);
     currMoleTile.appendChild(mole);
     currMoleClicked = false;
+
+    //Sets looks for different mole types
+    if (moleType == "diamond") currMoleTile.children[0].style.filter = "invert()";
+    if (moleType == "gold") currMoleTile.children[0].style.filter = "brightness(200%)";
 }
 
 // Sets the plant to appear at a random tile
@@ -94,7 +107,7 @@ function setPlant() {
 
     //Sets the plant texture
     let plant = document.createElement("img");
-    plant.src = "./media/piranha-plant.png"
+    plant.src = "./media/piranha-plant.png";
 
     //Gets a random tile and places the plant there, given no mole is there
     let num = getRandomTile();
@@ -108,7 +121,8 @@ function setPlant() {
 function selectTile() {
     if (this == currMoleTile && !currMoleClicked && !gameOver) {
         currMoleClicked = true;
-        score += 10;
+        scoreChange = (moleType == "diamond") ? 500 : (moleType == "gold") ? 50 : 10;
+        score += scoreChange;
         if (highScore < score) {
             highScore = score;
         }
@@ -125,6 +139,6 @@ function selectTile() {
 }
 
 function setTexts() {
-    document.getElementById("score").innerText = score.toString();
+    document.getElementById("score").innerText = score.toString() + ` (+${scoreChange})`;
     document.getElementById("highScore").innerText = "High Score: " + highScore.toString();
 }
